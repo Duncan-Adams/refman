@@ -53,12 +53,21 @@ class BibEntry:
 		return entry
 
 	def getAbstract(self):
+		if 'arxiv.org' in self.url:
+			i = self.url.index('abs/')
+			arxiv_number = self.url[i+4:]
+			arxiv_query=f'http://export.arxiv.org/api/query?id_list={arxiv_number}&max_results=1'
+			
+			
+			self.abstract = abstract_fetcher.get_abstract_arxiv(arxiv_query)
+
+
 		if self.archivePrefix == None:
 			return
 
 		if self.archivePrefix == 'arXiv':
-			title_quote = urllib.parse.quote_plus(self.title)
-			arxiv_query = f'http://export.arxiv.org/api/query?search_query=ti:{title_quote}&max_results=1'
+			arxiv_number = self.eprint
+			arxiv_query=f'http://export.arxiv.org/api/query?id_list={arxiv_number}&max_results=1'
 
 			self.abstract = abstract_fetcher.get_abstract_arxiv(arxiv_query)
 
@@ -76,6 +85,13 @@ def bibtexparser_Sanitizer(s: str) -> str:
 def iter_entries_from_file(bibtex_file: str) -> Iterable[BibEntry]:
 	with open(bibtex_file, "r") as bt:
 		bt_db = bibtexparser.load(bt)
-		print(bt_db.entries[0].keys())
 		yield from map(lambda x: BibEntry.fromDict(x, lowerCase=True, sanitizer=bibtexparser_Sanitizer), bt_db.entries)
+
+
+if __name__ == '__main__':
+	entries = [x for x in iter_entries_from_file('adams.bib')]
+
+	for entry in entries:
+		entry.getAbstract()
+		print(entry.abstract)
 
