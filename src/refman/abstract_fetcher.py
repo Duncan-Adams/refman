@@ -1,8 +1,6 @@
 import urllib, urllib.request
 import xml.etree.ElementTree as ET
 
-from bib_entry import BibEntry
-
 def get_abstract_arxiv(url: str) -> str:
    
     try: 

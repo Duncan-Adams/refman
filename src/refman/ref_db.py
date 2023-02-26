@@ -77,10 +77,12 @@ class RefDB:
 	
 	def search_in_column(self, col: str, query: str) -> Iterable[BibEntry]:
 		self._ensure_db_open()
-		query = RefDB.escape_pattern(query)
+		if col not in {field.name for field in fields(BibEntry)}:
+			raise KeyError(f"Unknown column {col}")
+		query = "%" + RefDB.escape_pattern(query) + "%"
 		try:
 			with self.con:
-				res = self.con.execute(f"SELECT {bib_entry_rowspec} FROM bib_entry WHERE ? LIKE '?' ESCAPE '\\'", col, query)
+				res = self.con.execute(f"SELECT {bib_entry_rowspec} FROM bib_entry WHERE {col} LIKE ? ESCAPE '\\'", (query,))
 				yield from map(BibEntry.fromSQLRow, res.fetchall())
 		except sqlite3.Error as e:
 			print("Error reading database", e)
@@ -88,9 +90,11 @@ class RefDB:
 	
 	def search_by_column(self, col: str, query: str) -> Iterable[BibEntry]:
 		self._ensure_db_open()
+		if col not in {field.name for field in fields(BibEntry)}:
+			raise KeyError(f"Unknown column {col}")
 		try:
 			with self.con:
-				res = self.con.execute(f"SELECT {bib_entry_rowspec} FROM bib_entry WHERE ? = '?'", col, query)
+				res = self.con.execute(f"SELECT {bib_entry_rowspec} FROM bib_entry WHERE {col} = ?", (query,))
 				yield from map(BibEntry.fromSQLRow, res.fetchall())
 		except sqlite3.Error as e:
 			print("Error reading database", e)
@@ -122,8 +126,7 @@ class RefDB:
 	# TODO: Dynamic tags
 	
 	def add_bib_entry(self, ent: BibEntry) -> bool:
-		if self.con is None:
-			raise OSError("Database not open")
+		self._ensure_db_open()
 		try:
 			with self.con:
 				self.con.execute(f"INSERT INTO bib_entry VALUES({bib_entry_valsspec})", dataclasses.asdict(ent))
@@ -133,6 +136,15 @@ class RefDB:
 				self.con = None
 			return False
 		return True
+	
+	def remove_bib_entry(self, ent: BibEntry) -> None:
+		self._ensure_db_open()
+		try:
+			with self.con:
+				self.con.execute(f"DELETE FROM bib_entry WHERE author = ? AND title = ?", (ent.author, ent.title))
+		except sqlite3.Error as e:
+			print("Error deleting from database", e)
+			self.con = None
 
 if __name__ == "__main__":
 	ents = list(iter_entries_from_file("src/refman/adams.bib"))
