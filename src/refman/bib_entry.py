@@ -39,7 +39,7 @@ class BibEntry:
 				setattr(entry, field.name, row[field.name])
 		return entry
 
-def yieldEntries(bibtex_file: str) -> Iterable[BibEntry]:
+def iter_entries_from_file(bibtex_file: str) -> Iterable[BibEntry]:
 	with open(bibtex_file, "r") as bt:
 		bt_db = bibtexparser.load(bt)
 		yield from map(BibEntry.fromDict, bt_db.entries)
