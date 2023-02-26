@@ -1,6 +1,9 @@
-import bibtexparser
-from dataclasses import dataclass
+from __future__ import annotations
 
+import bibtexparser
+from dataclasses import dataclass, fields, asdict
+from collections.abc import Iterable
+import sqlite3
 
 @dataclass
 class BibEntry:
@@ -19,69 +22,26 @@ class BibEntry:
 	pages: str = ''
 	year: str = ''
 	abstract: str = ''
+	
+	@classmethod
+	def fromDict(cls, entry_dict: dict) -> BibEntry:
+		entry = BibEntry()
+		for field in fields(BibEntry):
+			setattr(entry, field.name, entry_dict.get(field.name, ''))
+		return entry
+	
+	@classmethod
+	def fromSQLRow(cls, row: sqlite3.Row) -> BibEntry:
+		entry = BibEntry()
+		keys = set(row.keys())
+		for field in fields(BibEntry):
+			if field.name in keys:
+				setattr(entry, field.name, row[field.name])
+		return entry
 
-def createBibEntryFromDict(entry_dict: dict) -> BibEntry:
-	entry = BibEntry()
-
-	for key in entry_dict.keys():
-		match key:
-			case 'author':
-				entry.author = entry_dict.get(key, '')
-
-			case 'title':
-				entry.title = entry_dict.get(key, '')
-
-			case 'eprint':
-				entry.eprint = entry_dict.get(key, '')
-
-			case 'archivePrefix':
-				entry.archivePrefix = entry_dict.get(key, '')
-
-			case 'primaryClass':
-				entry.primaryClass = entry_dict.get(key, '')
-
-			case 'reportNumber':
-				entry.reportNumber = entry_dict.get(key, '')
-
-			case 'doi':
-				entry.doi = entry_dict.get(key, '')
-
-			case 'url':
-				entry.url = entry_dict.get(key, '')
-
-			case 'journal':
-				entry.journal = entry_dict.get(key, '')
-
-			case 'volume':
-				entry.volume = entry_dict.get(key, '')
-
-			case 'number':
-				entry.number = entry_dict.get(key, '')
-
-			case 'pages':
-				entry.pages = entry_dict.get(key, '')
-
-			case 'year':
-				entry.year = entry_dict.get(key, '')
-
-			case 'abstract':
-				entry.abstract = entry_dict.get(key, '')
-
-	return entry
-
-
-def yield_Entries(bibtex_file: str) -> BibEntry:
+def yieldEntries(bibtex_file: str) -> Iterable[BibEntry]:
 	with open(bibtex_file, "r") as bt:
 		bt_db = bibtexparser.load(bt)
-
-		for entry in bt_db.entries:
-			yield createBibEntryFromDict(entry)
-
-
-
-
-
-
-
+		yield from map(BibEntry.fromDict, bt_db.entries)
 
 	
