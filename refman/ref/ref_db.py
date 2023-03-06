@@ -27,8 +27,8 @@ bib_entry_fields = (
 )
 
 bib_entry_colspec = ",\n".join(field.name + " TEXT DEFAULT ''" for field in bib_entry_fields)
-bib_entry_rowspec = ", ".join(field.name for field in dataclasses.fields(BibEntry))
-bib_entry_valsspec = ", ".join(":" + field.name for field in dataclasses.fields(BibEntry))
+bib_entry_rowspec = ", ".join(field.name for field in bib_entry_fields)
+bib_entry_valsspec = ", ".join(":" + field.name for field in bib_entry_fields)
 
 class RefDB:
 	def __init__(self):
