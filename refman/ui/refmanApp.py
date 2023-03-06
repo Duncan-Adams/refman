@@ -5,6 +5,7 @@ from textual.widgets import Button, Header, Footer, Static, ListView, ListItem, 
 from textual.reactive import reactive
 from textual.widget import Widget
 
+from ..refman import ref_db
 
 class RefListEntry(Widget):
 
