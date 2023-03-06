@@ -3,7 +3,7 @@ import dataclasses
 import operator
 from collections.abc import Iterable
 
-from bib_entry import *
+from .bib_entry import *
 
 version_string = "0.1"
 

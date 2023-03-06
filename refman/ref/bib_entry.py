@@ -6,7 +6,7 @@ from dataclasses import dataclass, fields, asdict
 from collections.abc import Iterable
 import sqlite3
 
-import abstract_fetcher
+from . import abstract_fetcher
 
 @dataclass
 class BibEntry:
@@ -61,9 +61,11 @@ class BibEntry:
 			
 			self.abstract = abstract_fetcher.get_abstract_arxiv(arxiv_query)
 
+			return True
+
 
 		if self.archivePrefix == None:
-			return
+			return False
 
 		if self.archivePrefix == 'arXiv':
 			arxiv_number = self.eprint
@@ -71,11 +73,14 @@ class BibEntry:
 
 			self.abstract = abstract_fetcher.get_abstract_arxiv(arxiv_query)
 
-			return
+			return True
+
+		return False
 
 
 def bibtexparser_Sanitizer(s: str) -> str:
 	"""This is here because bibtexparser does not believe in the freedom and individual liberties of the developer"""
+	"""bibtexparser sometimes returns things wrapped in curly braces, with no to change the behaviour"""
 	if s.startswith('{'):
 		return s[1:-1]
 
@@ -86,12 +91,4 @@ def iter_entries_from_file(bibtex_file: str) -> Iterable[BibEntry]:
 	with open(bibtex_file, "r") as bt:
 		bt_db = bibtexparser.load(bt)
 		yield from map(lambda x: BibEntry.fromDict(x, lowerCase=True, sanitizer=bibtexparser_Sanitizer), bt_db.entries)
-
-
-if __name__ == '__main__':
-	entries = [x for x in iter_entries_from_file('adams.bib')]
-
-	for entry in entries:
-		entry.getAbstract()
-		print(entry.abstract)
 

@@ -1,4 +1,8 @@
 
+Screen {
+	layout: horizontal;
+}
+
 TagList {
 	dock: left;
 	width: 40;
@@ -8,14 +12,21 @@ TagList {
 }
 
 RefList {
-	width: 200;
+	width: 120;
 	border: grey;
 }
 
 RefListEntry {
-	width: 200;
+	width: 100;
 	height: 3;
 
+}
+
+AbstractBox {
+	width: 100;
+	height: 80;
+	border: grey;
+	margin-top: 1;
 }
 
 ListView {
