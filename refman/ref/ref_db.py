@@ -3,7 +3,7 @@ import dataclasses
 import operator
 from collections.abc import Iterable
 
-from .bib_entry import *
+from refman.ref.bib_entry import *
 
 version_string = "0.1"
 
@@ -26,15 +26,15 @@ bib_entry_fields = (
 	"abstract",
 )
 
-bib_entry_colspec = ",\n".join(field.name + " TEXT DEFAULT ''" for field in bib_entry_fields)
-bib_entry_rowspec = ", ".join(field.name for field in bib_entry_fields)
-bib_entry_valsspec = ", ".join(":" + field.name for field in bib_entry_fields)
+bib_entry_colspec = ",\n".join(field + " TEXT DEFAULT ''" for field in bib_entry_fields)
+bib_entry_rowspec = ", ".join(field for field in bib_entry_fields)
+bib_entry_valsspec = ", ".join(":" + field for field in bib_entry_fields)
 
 class RefDB:
-	def __init__(self):
+	def __init__(self, dbname="refman.db"):
 		self.con = None
 		try:
-			self.con = sqlite3.connect("refman.db")
+			self.con = sqlite3.connect(dbname)
 			self.con.row_factory = sqlite3.Row
 			with self.con:
 				if self.con.execute("SELECT name FROM sqlite_master WHERE name='config'").fetchone() is None:
@@ -156,16 +156,17 @@ class RefDB:
 			return False
 		return True
 	
-	def remove_bib_entry(self, ent: BibEntry) -> None:
+	def remove_bib_entry(self, ent: BibEntry) -> bool:
 		self._ensure_db_open()
 		try:
 			with self.con:
-				self.con.execute(f"DELETE FROM bib_entry WHERE author = ? AND title = ?", (ent.author, ent.title))
+				return bool(self.con.execute(f"DELETE FROM bib_entry WHERE author = ? AND title = ?", (ent.author, ent.title)).rowcount)
 		except sqlite3.Error as e:
 			print("Error deleting from database", e)
 			self.con = None
+			return False
 
 if __name__ == "__main__":
-	ents = list(iter_entries_from_file("src/refman/adams.bib"))
+	ents = list(iter_entries_from_file("../../resources/adams.bib"))
 	ref_db = RefDB()
 
