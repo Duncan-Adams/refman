@@ -8,7 +8,7 @@ from textual.strip import Strip
 
 from rich.segment import Segment
 
-from refman.ref.bib_entry import BibEntry, iter_entries_from_file
+from ref.bib_entry import BibEntry, iter_entries_from_file
 
 
 class TagList(Widget):
@@ -23,7 +23,7 @@ class AbstractBox(Widget):
 class refmanApp(App):
 	"""A Textual app to manage bibliographies"""
 	CSS_PATH = 'refman.css'
-	master_list = list(iter_entries_from_file('refman/test/adams.bib'))
+	master_list = list(iter_entries_from_file('test/adams.bib'))
 	selected_indices = set()
 
 
