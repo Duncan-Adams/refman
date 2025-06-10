@@ -38,7 +38,7 @@ class AbstractBox(Widget):
 class refmanApp(App):
     """A Textual app to manage bibliographies"""
     CSS_PATH = 'refman.css'
-    master_list = list(iter_entries_from_file('test/adams.bib'))
+    master_list = list(iter_entries_from_file('./resources/adams.bib'))
     selected_indices = set()
 
     def createListLabel(self, ent, selected) -> str:
