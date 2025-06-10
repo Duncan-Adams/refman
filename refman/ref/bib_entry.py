@@ -80,7 +80,7 @@ class BibEntry:
 
 def bibtexparser_Sanitizer(s: str) -> str:
 	"""This is here because bibtexparser does not believe in the freedom and individual liberties of the developer"""
-	"""bibtexparser sometimes returns things wrapped in curly braces, with no to change the behaviour"""
+	"""bibtexparser sometimes returns things wrapped in curly braces, with no ability to change the behaviour"""
 	if s.startswith('{'):
 		return s[1:-1]
 

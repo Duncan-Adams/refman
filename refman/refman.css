@@ -23,6 +23,7 @@ RefListEntry {
 }
 
 AbstractBox {
+    dock: right;
 	width: 100;
 	height: 80;
 	border: grey;
