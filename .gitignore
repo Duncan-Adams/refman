@@ -133,3 +133,5 @@ dmypy.json
 *.db
 *.sqlite3
 
+!resources/*
+
