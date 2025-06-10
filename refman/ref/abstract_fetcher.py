@@ -1,6 +1,12 @@
 import urllib, urllib.request
 import xml.etree.ElementTree as ET
+from ratelimit import limits, sleep_and_retry
 
+
+_THREE_SECONDS = 3
+
+@sleep_and_retry
+@limits(calls=1, period=_THREE_SECONDS)
 def get_abstract_arxiv(url: str) -> str:
    
     try: 
