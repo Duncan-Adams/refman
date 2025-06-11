@@ -18,7 +18,7 @@ def get_abstract_arxiv(url: str) -> str:
     try:
         xml_str = data.read().decode('utf-8')
 
-    except xml.etree.ElementTree.ParseError as e:
+    except ET.ParseError as e:
         print(e)
         return ''
    
