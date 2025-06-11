@@ -1,20 +1,19 @@
-from bib_entry import iter_entries_from_file
 from bib_entry import BibEntry
 
-class RefTag():
-	def __init__(self, name='') -> None:
-		self.titles = set()
-		self.name = name
 
-	def __str__(self) -> str:
-		return self.titles.__str__()
+class RefTag:
+    def __init__(self, name="") -> None:
+        self.titles = set()
+        self.name = name
 
-	def  __repr__(self) -> str:
-		return self.titles.__repr__()
+    def __str__(self) -> str:
+        return self.titles.__str__()
 
-	def add_entry(self, be: BibEntry) -> None:
-		self.titles.add(be.title)
+    def __repr__(self) -> str:
+        return self.titles.__repr__()
 
-	def remove_entry(self, title: str) -> None:
-		self.titles.remove(title)
+    def add_entry(self, be: BibEntry) -> None:
+        self.titles.add(be.title)
 
+    def remove_entry(self, title: str) -> None:
+        self.titles.remove(title)

@@ -2,16 +2,13 @@ import os
 import logging
 
 from textual.app import App, ComposeResult, RenderResult
-from textual.containers import Container, Horizontal
-from textual.widgets import Button, Header, Footer, Static, ListView, ListItem, Label
+from textual.widgets import Header, Footer, ListView, ListItem, Label
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.strip import Strip
 from textual.logging import TextualHandler
 
-from rich.segment import Segment
 
-from .ref.bib_entry import BibEntry, iter_entries_from_file
+from .ref.bib_entry import iter_entries_from_file
 
 
 logging.basicConfig(
@@ -24,34 +21,34 @@ class TagList(Widget):
     def render(self) -> RenderResult:
         return "Tags will go here"
 
+
 class AbstractBox(Widget):
-    abstract = reactive('')
-    
-    def __init__(
-    self,
-    name: str | None = None,
-    id: str | None =None
-    ) -> None:
+    abstract = reactive("")
+
+    def __init__(self, name: str | None = None, id: str | None = None) -> None:
         super().__init__(name=name, id=id)
-        
+
     def render(self) -> RenderResult:
         return self.abstract
 
+
 class refmanApp(App):
     """A Textual app to manage bibliographies"""
-    CSS_PATH = 'refman.css'
-    bib_file_loc = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test/adams.bib')
+
+    CSS_PATH = "refman.css"
+    bib_file_loc = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "test/adams.bib"
+    )
     master_list = list(iter_entries_from_file(bib_file_loc))
     selected_indices = set()
 
     def createListLabel(self, ent, selected) -> str:
         if selected:
-            return f'\[+] {ent.title}'
+            return f"\[+] {ent.title}"
 
-        return f'\[ ] {ent.title}'
+        return f"\[ ] {ent.title}"
 
     def initListLabels(self) -> list[ListItem]:
-
         list_labels = []
 
         for ent in self.master_list:
@@ -63,8 +60,8 @@ class refmanApp(App):
     def compose(self) -> ComposeResult:
         list_labels = self.initListLabels()
         yield TagList()
-        yield AbstractBox(id='abstract_box')
-        yield ListView(*list_labels, id='main_list')
+        yield AbstractBox(id="abstract_box")
+        yield ListView(*list_labels, id="main_list")
         yield Header()
         yield Footer()
 
@@ -73,9 +70,9 @@ class refmanApp(App):
         return
 
     def on_list_view_selected(self, message: ListView.Selected) -> None:
-        ob = self.query_one('#main_list')
+        ob = self.query_one("#main_list")
         ind = ob.index
-        
+
         if ind in self.selected_indices:
             self.selected_indices.remove(ind)
             sel = False
@@ -83,16 +80,18 @@ class refmanApp(App):
             self.selected_indices.add(ind)
             sel = True
 
-        ob.children[ind].children[0].update(self.createListLabel(self.master_list[ind], selected=sel))
+        ob.children[ind].children[0].update(
+            self.createListLabel(self.master_list[ind], selected=sel)
+        )
 
         return
-        
+
     def on_list_view_highlighted(self, message: ListView.Highlighted) -> None:
-        ob = self.query_one('#abstract_box')
-        ob.abstract = 'woof'
-        
+        ob = self.query_one("#abstract_box")
+        ob.abstract = "woof"
+
         return
-        
+
 
 def __main__():
     app = refmanApp()
@@ -101,4 +100,3 @@ def __main__():
 
 if __name__ == "__main__":
     __main__()
-
