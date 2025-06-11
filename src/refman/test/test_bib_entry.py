@@ -28,7 +28,7 @@ class TestBibEntry:
 
 
     def test_getAbstract(self):
-        entries = list(iter_entries_from_file("./refman/test/adams.bib"))
+        entries = list(iter_entries_from_file("./src/refman/test/adams.bib"))
 
         first_entry = entries[0]
 
