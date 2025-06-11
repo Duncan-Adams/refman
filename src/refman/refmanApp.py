@@ -9,6 +9,7 @@ from textual.logging import TextualHandler
 
 
 from .ref.bib_entry import iter_entries_from_file
+from .ref.ref_db import RefDB
 
 
 logging.basicConfig(
@@ -41,6 +42,16 @@ class refmanApp(App):
     )
     master_list = list(iter_entries_from_file(bib_file_loc))
     selected_indices = set()
+    
+    _DEFAULT_DB_PATH = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "ref_db.db"
+    )
+    
+    def __init__(self, db_path: str | None = None):
+        if db_path is None:
+            self.db_path = _DEFAULT_DB_PATH
+            self.rdb = RefDB(dbname = self.db_path)
+        
 
     def createListLabel(self, ent, selected) -> str:
         if selected:

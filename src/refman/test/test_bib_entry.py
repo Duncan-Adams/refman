@@ -30,7 +30,7 @@ class TestBibEntry:
 
         test_db = rdb.RefDB(dbname=":memory:")
         test_db.add_bib_entry(be_from_dict)
-        res = test_db.con.execute("SELECT author FROM bib_entry")
+        res = test_db.con.execute("SELECT author, title, journal FROM bib_entry")
 
         be_test = BibEntry.fromSQLRow(list(res.fetchall())[0])
         assert be_test.author == "Anne Author"

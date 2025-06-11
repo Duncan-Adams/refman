@@ -3,7 +3,7 @@ import dataclasses
 import operator
 from collections.abc import Iterable
 
-from refman.ref.bib_entry import BibEntry
+from refman.ref.bib_entry import BibEntry, iter_entries_from_file
 
 version_string = "0.1"
 
@@ -64,6 +64,9 @@ class RefDB:
         except sqlite3.Error as e:
             print("Error opening database file", e)
             self.con = None
+            
+    def __del__(self):
+        self.con.close()
 
     def _ensure_db_open(self) -> None:
         if self.con is None:
@@ -112,7 +115,7 @@ class RefDB:
 
     def search_in_column(self, col: str, query: str) -> Iterable[BibEntry]:
         self._ensure_db_open()
-        if col not in {field.name for field in bib_entry_fields}:
+        if col not in {field for field in bib_entry_fields}:
             raise KeyError(f"Unknown column {col}")
         query = "%" + RefDB.escape_pattern(query) + "%"
         try:
@@ -128,7 +131,7 @@ class RefDB:
 
     def search_by_column(self, col: str, query: str) -> Iterable[BibEntry]:
         self._ensure_db_open()
-        if col not in {field.name for field in bib_entry_fields}:
+        if col not in {field for field in bib_entry_fields}:
             raise KeyError(f"Unknown column {col}")
         try:
             with self.con:
@@ -195,3 +198,7 @@ class RefDB:
             print("Error deleting from database", e)
             self.con = None
             return False
+            
+    def import_from_bibfile(self, bibtex_file: str):
+        return [self.add_bib_entry(be) for be in iter_entries_from_file(bibtex_file)]
+
