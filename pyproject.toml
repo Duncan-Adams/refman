@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+refman = ["*.css"]
+"refman.test" = ["*.bib", "*.db"]
+
+[project]
+name = "refman"
+version = "0.1"
+dependencies = [
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "Duncan Adams", email = "duncan.adams@stonybrook.edu"},
+  {name = "Gabriel Eiseman"},
+]
+maintainers = [
+  {name = "Duncan Adams", email = "duncan.adams@stonybrook.edu"}
+]
+description = "A CLI tool for managing academic bibliographies"
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["reference", "arxiv"]
+classifiers = [
+  "Programming Language :: Python"
+]
+
+
+#[project.urls]
+#Homepage = ""
+#Documentation = ""
+#Repository = ""
+#"Bug Tracker" = ""
+#Changelog = ""
+
+[project.scripts]
+refman = "refman.refmanApp:__main__"

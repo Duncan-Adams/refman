@@ -1,4 +1,6 @@
+import os
 import logging
+
 from textual.app import App, ComposeResult, RenderResult
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Header, Footer, Static, ListView, ListItem, Label
@@ -9,7 +11,7 @@ from textual.logging import TextualHandler
 
 from rich.segment import Segment
 
-from ref.bib_entry import BibEntry, iter_entries_from_file
+from .ref.bib_entry import BibEntry, iter_entries_from_file
 
 
 logging.basicConfig(
@@ -38,7 +40,8 @@ class AbstractBox(Widget):
 class refmanApp(App):
     """A Textual app to manage bibliographies"""
     CSS_PATH = 'refman.css'
-    master_list = list(iter_entries_from_file('./resources/adams.bib'))
+    bib_file_loc = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test/adams.bib')
+    master_list = list(iter_entries_from_file(bib_file_loc))
     selected_indices = set()
 
     def createListLabel(self, ent, selected) -> str:
@@ -56,9 +59,6 @@ class refmanApp(App):
             list_labels.append(ListItem(Label(label)))
 
         return list_labels
-
-
-    #BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
 
     def compose(self) -> ComposeResult:
         list_labels = self.initListLabels()
@@ -94,10 +94,11 @@ class refmanApp(App):
         return
         
 
-
+def __main__():
+    app = refmanApp()
+    app.run()
 
 
 if __name__ == "__main__":
-    app = refmanApp()
-    app.run()
+    __main__()
 
