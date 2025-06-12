@@ -1,9 +1,5 @@
 import os
-
 import pytest
-
-from pathlib import Path
-import shutil
 
 import refman.ref.ref_db as rdb
 from refman.ref.bib_entry import BibEntry, iter_entries_from_file
@@ -49,8 +45,11 @@ class TestDatabase:
         ref_db.add_bib_entry(ent)
         
         ents = ref_db.get_all_bib_entries()
-        assert ent.title == test_title 
-        assert ent.author == test_author
+        test_ent = next(ents, False)
+        
+        assert (test_ent is not None)
+        assert test_ent.title == test_title 
+        assert test_ent.author == test_author
     
     def test_search_author(self):
         ref_db = rdb.RefDB(":memory:")

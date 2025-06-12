@@ -7,9 +7,10 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.logging import TextualHandler
 
-
+import .refman_cfg as cfg
 from .ref.bib_entry import iter_entries_from_file
 from .ref.ref_db import RefDB
+
 
 
 logging.basicConfig(
@@ -34,25 +35,18 @@ class AbstractBox(Widget):
 
 
 class refmanApp(App):
-    """A Textual app to manage bibliographies"""
-
-    CSS_PATH = "refman.css"
-    bib_file_loc = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "test/adams.bib"
-    )
-    master_list = list(iter_entries_from_file(bib_file_loc))
-    selected_indices = set()
-    
-    _DEFAULT_DB_PATH = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "ref_db.db"
-    )
-    
+    """A Textual app to manage academic bibliographies"""
+            
     def __init__(self, db_path: str | None = None):
         if db_path is None:
-            self.db_path = _DEFAULT_DB_PATH
-            self.rdb = RefDB(dbname = self.db_path)
-        
-
+            self.db_path = cfg.default_db_path
+        else:
+            self.db_path = db_path
+            
+        self.rdb = RefDB(dbname = self.db_path)
+        self.master_list = list(iter_entries_from_file(cfg.test_bib_file_loc))
+        self.selected_indices = set()
+            
     def createListLabel(self, ent, selected) -> str:
         if selected:
             return f"\[+] {ent.title}"
